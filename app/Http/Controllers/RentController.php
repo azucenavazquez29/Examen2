@@ -10,11 +10,10 @@ use App\Models\Staff;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
+
 class RentController extends Controller
 {
-    /**
-     * Procesar una nueva renta
-     */
+  
     public function store(Request $request)
     {
         $request->validate([
@@ -24,12 +23,12 @@ class RentController extends Controller
 
         $film = Film::findOrFail($request->film_id);
         
-        // Verificar si la película está disponible
+        
         if (!$film->isAvailable()) {
             return redirect()->back()->with('error', 'La película no está disponible para rentar.');
         }
 
-        // Buscar un inventario disponible de esta película
+        
         $inventory = Inventory::where('film_id', $film->film_id)
             ->whereDoesntHave('rentals', function($query) {
                 $query->whereNull('return_date');
@@ -40,13 +39,13 @@ class RentController extends Controller
             return redirect()->back()->with('error', 'No hay copias disponibles de esta película.');
         }
 
-        // Obtener el primer staff (puedes ajustar esto según tu lógica)
+        
         $staff = Staff::first();
         if (!$staff) {
             return redirect()->back()->with('error', 'Error del sistema: No hay personal disponible.');
         }
 
-        // Crear el rental
+   
         Rental::create([
             'rental_date' => Carbon::now(),
             'inventory_id' => $inventory->inventory_id,
@@ -61,19 +60,17 @@ class RentController extends Controller
             "Película '{$film->title}' rentada exitosamente a {$customer->first_name} {$customer->last_name}.");
     }
 
-    /**
-     * Procesar devolución de una película
-     */
+ 
     public function returnFilm(Request $request, $rental_id)
     {
         $rental = Rental::with(['customer', 'inventory.film'])->findOrFail($rental_id);
 
-        // Verificar que no esté ya devuelta
+      
         if ($rental->return_date) {
             return redirect()->back()->with('error', 'Esta película ya fue devuelta.');
         }
 
-        // Marcar como devuelta
+     
         $rental->update([
             'return_date' => Carbon::now()
         ]);
@@ -85,9 +82,7 @@ class RentController extends Controller
             "Película '{$film->title}' devuelta exitosamente por {$customer->first_name} {$customer->last_name}.");
     }
 
-    /**
-     * Ver historial de rentas
-     */
+    
     public function index()
     {
         $rentals = Rental::with(['customer', 'inventory.film', 'staff'])
@@ -97,9 +92,7 @@ class RentController extends Controller
         return view('rentals.index', compact('rentals'));
     }
 
-    /**
-     * Ver rentas activas (no devueltas)
-     */
+    
     public function active()
     {
         $activeRentals = Rental::with(['customer', 'inventory.film', 'staff'])

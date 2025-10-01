@@ -25,4 +25,28 @@ class Customer extends Model
     {
         return $this->hasMany(Rental::class, 'customer_id', 'customer_id');
     }
+
+    // App\Models\Customer.php
+
+public function hasOverdueRentals()
+{
+    return $this->rentals()
+        ->whereNull('return_date')
+        ->whereHas('inventory.film', function($query) {
+           
+            $query->whereRaw('DATE_ADD(rental.rental_date, INTERVAL film.rental_duration DAY) < NOW()');
+        })
+        ->exists();
+}
+
+public function overdueRentals()
+{
+    return $this->rentals()
+        ->with(['inventory.film'])
+        ->whereNull('return_date')
+        ->whereHas('inventory.film', function($query) {
+            $query->whereRaw('DATE_ADD(rental.rental_date, INTERVAL film.rental_duration DAY) < NOW()');
+        })
+        ->get();
+}
 }

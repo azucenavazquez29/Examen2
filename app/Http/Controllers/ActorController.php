@@ -16,7 +16,7 @@ class ActorController extends Controller
 
     public function create()
     {
-        $films = Film::all(); // opcional si quieres asignar películas
+        $films = Film::all(); 
         return view('actors.create', compact('films'));
     }
 
@@ -63,7 +63,7 @@ class ActorController extends Controller
 
     public function destroy(Actor $actor)
     {
-        $actor->films()->detach(); // elimina relación con películas
+        $actor->films()->detach(); 
         $actor->delete();
         return redirect()->route('actors.index')->with('success', 'Actor eliminado.');
     }

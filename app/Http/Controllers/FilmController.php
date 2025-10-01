@@ -9,18 +9,16 @@ use App\Models\Customer;
 use Illuminate\Http\Request;
 
 
-
-
 class FilmController extends Controller
 {
 
 
     public function index()
 {
-    // Traer todas las películas
+    
     $films = Film::with(['actors', 'language', 'categories'])->get();
 
-    // Pasar ambas variables a la vista
+    
     return view('films.index', compact('films'));
 }
 
@@ -52,7 +50,7 @@ class FilmController extends Controller
         'special_features.*' => 'string',
     ]);
 
-    // Convertir el array de special_features en string compatible con SET
+    
     if(isset($validated['special_features'])){
         $validated['special_features'] = implode(',', $validated['special_features']);
     }
@@ -65,7 +63,7 @@ class FilmController extends Controller
 
     public function show(Film $film)
     {
-        // Incluye relaciones para mostrar más info
+        
         $film->load(['actors', 'language', 'originalLanguage', 'categories']);
         return view('films.show', compact('film'));
     }
@@ -113,15 +111,15 @@ public function update(Request $request, Film $film)
     }
 
 
-public function rentals()
-{
-    return $this->hasMany(Rental::class, 'film_id', 'film_id');
-}
+    public function rentals()
+    {
+        return $this->hasMany(Rental::class, 'film_id', 'film_id');
+    }
 
-public function currentRental()
-{
-    return $this->rentals()->whereNull('return_date')->first();
-}
+    public function currentRental()
+    {
+        return $this->rentals()->whereNull('return_date')->first();
+    }
 
 
 }
