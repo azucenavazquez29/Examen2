@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Customer extends Model
 {
-    protected $table = 'customer';          // nombre de la tabla
-    protected $primaryKey = 'customer_id';  // clave primaria
-    public $timestamps = false;             // la tabla no usa created_at / updated_at
+    protected $table = 'customer';         
+    protected $primaryKey = 'customer_id';  
+    public $timestamps = false;            
 
     protected $fillable = [
         'store_id',

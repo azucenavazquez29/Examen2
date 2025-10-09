@@ -414,6 +414,14 @@
     @endforeach
 </div>
 
+<!-- Paginación -->
+<div class="container mt-4 mb-5">
+    <div class="d-flex justify-content-center">
+        <div class="pagination-wrapper">
+            {{ $films_tst->links() }}
+        </div>
+    </div>
+</div>
 
                         
                         <div class="contorno_titulo_cartas"><span>Anuncios</span></div>

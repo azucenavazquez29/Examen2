@@ -12,3 +12,43 @@
     }
   });
 </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const modalTitle = document.getElementById('modalTitle');
+        const showRegisterBtn = document.getElementById('showRegister');
+        const showLoginBtn = document.getElementById('showLogin');
+
+        if (showRegisterBtn) {
+            showRegisterBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+                modalTitle.textContent = 'Registrarme';
+            });
+        }
+
+        if (showLoginBtn) {
+            showLoginBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                registerForm.style.display = 'none';
+                loginForm.style.display = 'block';
+                modalTitle.textContent = 'Iniciar Sesión';
+            });
+        }
+
+        // Resetear al cerrar el modal
+        const modalElement = document.getElementById('modalLogin');
+        if (modalElement) {
+            modalElement.addEventListener('hidden.bs.modal', function() {
+                if (registerForm && loginForm) {
+                    registerForm.style.display = 'none';
+                    loginForm.style.display = 'block';
+                    modalTitle.textContent = 'Iniciar Sesión';
+                }
+            });
+        }
+    });
+</script>
