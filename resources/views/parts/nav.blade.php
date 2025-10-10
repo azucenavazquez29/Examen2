@@ -28,7 +28,7 @@
                                     </li>
 
                                     <li class="nav-item navegacion_item">
-                                        <a class="nav-link" href="#"><span class="navegacion_item_color">Peliculas</span></a>
+                                        <a class="nav-link" href="{{ url('/estadisticas') }}"><span class="navegacion_item_color">Estadisticas</span></a>
                                     </li>
 
                                     <li class="nav-item navegacion_item dropdown">
