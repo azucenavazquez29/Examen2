@@ -28,7 +28,7 @@
                                     </li>
 
                                     <li class="nav-item navegacion_item">
-                                        <a class="nav-link" href="{{ url('/films') }}"><span class="navegacion_item_color">Peliculas</span></a>
+                                        <a class="nav-link" href="#"><span class="navegacion_item_color">Peliculas</span></a>
                                     </li>
 
                                     <li class="nav-item navegacion_item dropdown">
@@ -36,7 +36,10 @@
                                             <span class="navegacion_item_color">Listas</span>
                                         </a>
                                         <ul class="dropdown-menu variante">
+                                            <li><a class="dropdown-item variante_opciones" href="{{ url('/films') }}"><span class="navegacion_item_color">Peliculas</span></a></li>
                                             <li><a class="dropdown-item variante_opciones" href="{{ url('/actors') }}">Actores</a></li>
+                                            <li><a class="dropdown-item variante_opciones" href="{{ url('/categories') }}">Categorias</a></li>
+                                            <li><a class="dropdown-item variante_opciones" href="{{ url('/languages') }}">Idiomas</a></li>
                                             <li><a class="dropdown-item variante_opciones" href="{{ url('/customers') }}">Clientes/Usuarios</a></li>
                                         </ul>
                                     </li>

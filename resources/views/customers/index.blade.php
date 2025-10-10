@@ -54,7 +54,7 @@
                                 </a>
 
                                 <form action="{{ route('customers.destroy', $customer) }}" method="POST" class="d-inline">
-                                    @csrf @method('DELETE')
+                       →             @csrf @method('DELETE')
                                     <button type="submit" class="btn btn-sm btn-danger shadow-sm"
                                         onclick="return confirm('¿Seguro que deseas eliminar el cliente {{ $customer->first_name }} {{ $customer->last_name }}?');"
                                         data-bs-toggle="tooltip" title="Eliminar Cliente">

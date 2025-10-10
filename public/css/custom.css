@@ -711,12 +711,12 @@ footer {
 
 /* Contenedor principal del modal */
 .cuadro-login {
-    background: #16213e !important;
+    background: #000000 !important;
     border-radius: 12px;
     border: none;
     color: #fff;
-}
-
+}s
+s
 /* Header del modal */
 .modal-header {
     border: none;

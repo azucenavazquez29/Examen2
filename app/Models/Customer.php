@@ -20,13 +20,44 @@ class Customer extends Model
         'create_date'
     ];
 
-    // Relación con rentals
+    protected $casts = [
+        'active' => 'boolean',
+        'create_date' => 'datetime',
+        'last_update' => 'datetime',
+    ];
+
+
+    public function store()
+    {
+        return $this->belongsTo(Store::class, 'store_id', 'store_id');
+    }
+
+    public function address()
+    {
+        return $this->belongsTo(Address::class, 'address_id', 'address_id');
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class, 'customer_id', 'customer_id');
+    }
+
+
+
     public function rentals()
     {
         return $this->hasMany(Rental::class, 'customer_id', 'customer_id');
     }
 
-    // App\Models\Customer.php
+
+    public function activeRentals()
+    {
+        return $this->rentals()
+            ->with('inventory.film')
+            ->whereNull('return_date')
+            ->get();
+    }
+
 
 public function hasOverdueRentals()
 {
