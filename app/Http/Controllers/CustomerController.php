@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use App\Models\Store;
-use App\Models\Adress;
+use App\Models\Address;
+use App\Models\City;
 use Illuminate\Http\Request;
 
 class CustomerController extends Controller
@@ -17,10 +18,11 @@ class CustomerController extends Controller
 
         public function create()
     {
+        $cities = City::all();
         $stores = Store::all();
-        $adress = Adress::all();
+        $addresses = Address::all();
 
-        return view('customers.create', compact('stores', 'adress'));
+        return view('customers.create', compact('stores', 'addresses','cities'));
     }
 
     public function store(Request $request)
@@ -50,10 +52,11 @@ public function show(Customer $customer)
 
 public function edit(Customer $customer)
 {
+        $cities = City::all();
         $stores = Store::all();
-        $adress = Adress::all();
+        $addresses = Adress::all();
 
-    return view('customers.edit', compact('stores', 'adress'));
+    return view('customers.edit', compact('stores', 'addresses','cities'));
 }
 
 public function update(Request $request, Customer $customer)

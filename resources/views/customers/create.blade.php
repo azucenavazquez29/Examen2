@@ -8,13 +8,12 @@
         <div class="container my-5">
             <div class="card shadow-lg rounded-4 border-0 bg-dark text-white">
                 <div class="card-header bg-gradient bg-dark text-warning text-center py-4">
-                    <h1 class="display-5 fw-bold">🎬 Nueva Película</h1>
+                    <h1 class="display-5 fw-bold">👤 Nuevo Cliente</h1>
                 </div>
                 <div class="card-body p-5">
-                    <form action="{{ route('films.store') }}" method="POST">
+                    <form action="{{ route('customers.store') }}" method="POST">
                         @csrf
 
-                        {{-- Errores de validación --}}
                         @if ($errors->any())
                             <div class="alert alert-danger">
                                 <ul class="mb-0">
@@ -25,125 +24,117 @@
                             </div>
                         @endif
 
-                        {{-- Título --}}
-                        <div class="mb-4">
-                            <label for="title" class="form-label fw-semibold text-warning">Título</label>
-                            <input type="text" name="title" id="title"
-                                class="form-control form-control-lg shadow-sm bg-secondary text-white border-0"
-                                placeholder="Nombre de la película" value="{{ old('title') }}">
-                        </div>
+                        <h4 class="text-warning mb-3">📋 Información del Cliente</h4>
 
-                        {{-- Descripción --}}
-                        <div class="mb-4">
-                            <label for="description" class="form-label fw-semibold text-warning">Descripción</label>
-                            <textarea name="description" id="description"
-                                class="form-control shadow-sm bg-secondary text-white border-0"
-                                rows="4" placeholder="Descripción de la película">{{ old('description') }}</textarea>
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <label for="first_name" class="form-label fw-semibold text-warning">Nombres</label>
+                                <input type="text" name="first_name" id="first_name"
+                                    class="form-control form-control-lg shadow-sm bg-secondary text-white border-0"
+                                    placeholder="Nombre del cliente" value="{{ old('first_name') }}" required>
+                            </div>
+
+                            <div class="col-md-6 mb-4">
+                                <label for="last_name" class="form-label fw-semibold text-warning">Apellidos</label>
+                                <input type="text" name="last_name" id="last_name"
+                                    class="form-control form-control-lg shadow-sm bg-secondary text-white border-0"
+                                    placeholder="Apellido del cliente" value="{{ old('last_name') }}" required>
+                            </div>
                         </div>
 
                         <div class="row">
-                            {{-- Año --}}
-                            <div class="col-md-4 mb-4">
-                                <label for="release_year" class="form-label fw-semibold text-warning">Año</label>
-                                <input type="number" name="release_year" id="release_year"
+                            <div class="col-md-6 mb-4">
+                                <label for="email" class="form-label fw-semibold text-warning">Correo (Email)</label>
+                                <input type="email" name="email" id="email"
                                     class="form-control shadow-sm bg-secondary text-white border-0"
-                                    value="{{ old('release_year') }}">
+                                    placeholder="correo@ejemplo.com" value="{{ old('email') }}">
                             </div>
 
-                            {{-- Idioma principal --}}
-                            <div class="col-md-4 mb-4">
-                                <label for="language_id" class="form-label fw-semibold text-warning">Idioma</label>
-                                <select name="language_id" id="language_id"
-                                    class="form-select shadow-sm bg-secondary text-white border-0">
+                            <div class="col-md-6 mb-4">
+                                <label for="store_id" class="form-label fw-semibold text-warning">Tienda</label>
+                                <select name="store_id" id="store_id"
+                                    class="form-select shadow-sm bg-secondary text-white border-0" required>
                                     <option value="">-- Seleccionar --</option>
-                                    @foreach ($languages as $lang)
-                                        <option value="{{ $lang->language_id }}" {{ old('language_id') == $lang->language_id ? 'selected' : '' }}>
-                                            {{ $lang->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-
-                            {{-- Idioma original --}}
-                            <div class="col-md-4 mb-4">
-                                <label for="original_language_id" class="form-label fw-semibold text-warning">Idioma Original</label>
-                                <select name="original_language_id" id="original_language_id"
-                                    class="form-select shadow-sm bg-secondary text-white border-0">
-                                    <option value="">-- Seleccionar --</option>
-                                    @foreach ($languages as $lang)
-                                        <option value="{{ $lang->language_id }}" {{ old('original_language_id') == $lang->language_id ? 'selected' : '' }}>
-                                            {{ $lang->name }}
+                                    @foreach ($stores as $store)
+                                        <option value="{{ $store->store_id }}" {{ old('store_id') == $store->store_id ? 'selected' : '' }}>
+                                            Tienda {{ $store->store_id }} - {{ $store->address->city->city ?? 'Sin ciudad' }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
 
+                        <div class="mb-4">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" name="active" id="active" 
+                                    value="1" {{ old('active', true) ? 'checked' : '' }}>
+                                <label class="form-check-label text-warning fw-semibold" for="active">
+                                    Cliente Activo
+                                </label>
+                            </div>
+                        </div>
+
+                        <hr class="border-warning my-4">
+
+                        <h4 class="text-warning mb-3">📍 Dirección</h4>
+
+                        <div class="mb-4">
+                            <label for="address" class="form-label fw-semibold text-warning">Dirección</label>
+                            <input type="text" name="address" id="address"
+                                class="form-control shadow-sm bg-secondary text-white border-0"
+                                placeholder="Calle, número, colonia" value="{{ old('address') }}" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="address2" class="form-label fw-semibold text-warning">Dirección 2 (Opcional)</label>
+                            <input type="text" name="address2" id="address2"
+                                class="form-control shadow-sm bg-secondary text-white border-0"
+                                placeholder="Departamento, piso, etc." value="{{ old('address2') }}">
+                        </div>
+
                         <div class="row">
                             <div class="col-md-4 mb-4">
-                                <label for="rental_duration" class="form-label fw-semibold text-warning">Duración renta (días)</label>
-                                <input type="number" name="rental_duration" id="rental_duration"
+                                <label for="district" class="form-label fw-semibold text-warning">Distrito</label>
+                                <input type="text" name="district" id="district"
                                     class="form-control shadow-sm bg-secondary text-white border-0"
-                                    value="{{ old('rental_duration') }}">
+                                    placeholder="Distrito" value="{{ old('district') }}" required>
                             </div>
 
                             <div class="col-md-4 mb-4">
-                                <label for="rental_rate" class="form-label fw-semibold text-warning">Tarifa renta</label>
-                                <input type="text" name="rental_rate" id="rental_rate"
-                                    class="form-control shadow-sm bg-secondary text-white border-0"
-                                    placeholder="$0.00" value="{{ old('rental_rate') }}">
+                                <label for="city_id" class="form-label fw-semibold text-warning">Ciudad</label>
+                                <select name="city_id" id="city_id"
+                                    class="form-select shadow-sm bg-secondary text-white border-0" required>
+                                    <option value="">-- Seleccionar --</option>
+                                    @foreach ($cities as $city)
+                                        <option value="{{ $city->city_id }}" {{ old('city_id') == $city->city_id ? 'selected' : '' }}>
+                                            {{ $city->city }} - {{ $city->country->country ?? '' }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <div class="col-md-4 mb-4">
-                                <label for="length" class="form-label fw-semibold text-warning">Duración (min)</label>
-                                <input type="number" name="length" id="length"
+                                <label for="postal_code" class="form-label fw-semibold text-warning">Código Postal</label>
+                                <input type="text" name="postal_code" id="postal_code"
                                     class="form-control shadow-sm bg-secondary text-white border-0"
-                                    value="{{ old('length') }}">
+                                    placeholder="00000" value="{{ old('postal_code') }}">
                             </div>
                         </div>
 
-                        {{-- Costo de reemplazo --}}
                         <div class="mb-4">
-                            <label for="replacement_cost" class="form-label fw-semibold text-warning">Costo de reemplazo</label>
-                            <input type="text" name="replacement_cost" id="replacement_cost"
+                            <label for="phone" class="form-label fw-semibold text-warning">Teléfono</label>
+                            <input type="text" name="phone" id="phone"
                                 class="form-control shadow-sm bg-secondary text-white border-0"
-                                placeholder="$0.00" value="{{ old('replacement_cost') }}">
+                                placeholder="000-000-0000" value="{{ old('phone') }}" required>
                         </div>
-
-                        {{-- Clasificación --}}
-                        <div class="mb-4">
-                            <label for="rating" class="form-label fw-semibold text-warning">Clasificación</label>
-                            <select name="rating" id="rating"
-                                class="form-select shadow-sm bg-secondary text-white border-0">
-                                <option value="">-- Seleccionar --</option>
-                                @foreach (['G', 'PG', 'PG-13', 'R', 'NC-17'] as $rate)
-                                    <option value="{{ $rate }}" {{ old('rating') == $rate ? 'selected' : '' }}>
-                                        {{ $rate }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        {{-- Categorías --}}
-                        <div class="mb-4">
-                            <label for="categories" class="form-label fw-semibold text-warning">Categorías</label>
-                            <select name="categories[]" id="categories"
-                                class="form-select shadow-sm bg-secondary text-white border-0" multiple>
-                                @foreach ($categories as $cat)
-                                    <option value="{{ $cat->category_id }}" {{ in_array($cat->category_id, old('categories', [])) ? 'selected' : '' }}>
-                                        {{ $cat->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <small class="text-muted">Mantén presionada CTRL (o ⌘ en Mac) para seleccionar varias</small>
-                        </div>
-
-
 
                         <div class="text-center mt-5">
+                            <a href="{{ route('customers.index') }}" class="btn btn-secondary btn-lg shadow-lg px-5 py-3 fw-bold me-3">
+                                ← Cancelar
+                            </a>
                             <button type="submit"
                                 class="btn btn-warning btn-lg shadow-lg px-5 py-3 fw-bold text-dark">
-                                💾 Guardar Película
+                                💾 Guardar Cliente
                             </button>
                         </div>
                     </form>
