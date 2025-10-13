@@ -74,4 +74,9 @@ class ActorController extends Controller
     $actor->load('films');
     return view('actors.show', compact('actor'));
 }
+
+public function films()
+{
+    return $this->belongsToMany(Film::class, 'film_actor', 'actor_id', 'film_id');
+}
 }
