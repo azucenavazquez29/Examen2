@@ -1,31 +1,28 @@
 @extends('layouts.app')
 
-@section('title', 'Detalle de Empleado: ' . $staff->full_name)
+@section('title', 'Detalles del Empleado')
 
 @section('content')
 <div class="container-fluid py-4">
     <div class="row mb-4">
         <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <h1 class="h3">{{ $staff->full_name }}</h1>
-                <div class="btn-group">
-                    <a href="{{ route('staff.edit', $staff->staff_id) }}" class="btn btn-warning">
-                        <i class="fas fa-edit"></i> Editar
-                    </a>
-                    <a href="{{ route('staff.index') }}" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left"></i> Volver
-                    </a>
-                </div>
-            </div>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ route('staff.index') }}">Empleados</a></li>
+                    <li class="breadcrumb-item active">{{ $staff->full_name }}</li>
+                </ol>
+            </nav>
         </div>
     </div>
 
-    <!-- Alertas -->
-    @if($message = session('success'))
-        <div class="alert alert-success alert-dismissible fade show">
-            <i class="fas fa-check-circle"></i> {{ $message }}
-            @if($new_password = session('new_password'))
-                <br><small>Nueva contraseña temporal: <code>{{ $new_password }}</code></small>
+    @if(session('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>{{ session('success') }}
+            @if(session('temp_password'))
+                <br><strong>Contraseña temporal:</strong> <code>{{ session('temp_password') }}</code>
+            @endif
+            @if(session('new_password'))
+                <br><strong>Nueva contraseña:</strong> <code>{{ session('new_password') }}</code>
             @endif
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
@@ -33,189 +30,253 @@
 
     <div class="row">
         <!-- Información Principal -->
-        <div class="col-lg-3">
-            <div class="card mb-3">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Información Personal</h5>
-                </div>
-                <div class="card-body">
+        <div class="col-lg-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center">
                     <div class="mb-3">
-                        <label class="text-muted small">Nombre Completo</label>
-                        <p class="mb-0">
-                        <i class="fas fa-phone"></i> {{ $staff->address->phone }}
+                        <div class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center" 
+                             style="width: 100px; height: 100px; font-size: 2.5rem;">
+                            {{ strtoupper(substr($staff->first_name, 0, 1)) }}{{ strtoupper(substr($staff->last_name, 0, 1)) }}
+                        </div>
+                    </div>
+                    <h4 class="mb-1">{{ $staff->full_name }}</h4>
+                    <p class="text-muted mb-3">
+                        @if($staff->isManager())
+                            <span class="badge bg-warning text-dark">
+                                <i class="fas fa-crown me-1"></i>Gerente
+                            </span>
+                        @else
+                            <span class="badge bg-primary">Empleado</span>
+                        @endif
+                        @if($staff->active)
+                            <span class="badge bg-success">Activo</span>
+                        @else
+                            <span class="badge bg-secondary">Inactivo</span>
+                        @endif
                     </p>
+
+                    <div class="d-grid gap-2">
+                        <a href="{{ route('staff.edit', $staff->staff_id) }}" class="btn btn-primary">
+                            <i class="fas fa-edit me-1"></i>Editar Empleado
+                        </a>
+                        <form action="{{ route('staff.toggle-active', $staff->staff_id) }}" method="POST">
+                            @csrf
+                            @if($staff->active)
+                                <button type="submit" class="btn btn-outline-secondary w-100"
+                                        onclick="return confirm('¿Desactivar este empleado?')">
+                                    <i class="fas fa-ban me-1"></i>Desactivar
+                                </button>
+                            @else
+                                <button type="submit" class="btn btn-outline-success w-100"
+                                        onclick="return confirm('¿Activar este empleado?')">
+                                    <i class="fas fa-check me-1"></i>Activar
+                                </button>
+                            @endif
+                        </form>
+                    </div>
                 </div>
             </div>
 
-            <!-- Tienda -->
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Tienda Asignada</h5>
+            <!-- Estadísticas -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Estadísticas</h5>
                 </div>
                 <div class="card-body">
-                    @if($staff->store)
-                        <p class="mb-2">
-                            <strong>Tienda {{ $staff->store->store_id }}</strong>
-                        </p>
-                        <p class="mb-2">
-                            <small class="text-muted">{{ $staff->store->address->address }}</small>
-                        </p>
-                        <a href="{{ route('stores.show', $staff->store->store_id) }}" class="btn btn-sm btn-outline-primary w-100">
-                            Ver Tienda
-                        </a>
-                    @else
-                        <p class="text-muted">Sin tienda asignada</p>
-                    @endif
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Total Rentas:</span>
+                        <strong class="text-primary">{{ $stats['total_rentals'] }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Rentas Activas:</span>
+                        <strong class="text-success">{{ $stats['active_rentals'] }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Rentas este mes:</span>
+                        <strong class="text-info">{{ $staff->monthlyRentalsCount() }}</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Ingresos del mes:</span>
+                        <strong class="text-success">${{ number_format($staff->monthlyIncome(), 2) }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Información de Contacto -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-address-card me-2"></i>Contacto</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Email</small>
+                        <strong>{{ $staff->email }}</strong>
+                    </div>
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Teléfono</small>
+                        <strong>{{ $staff->address->phone }}</strong>
+                    </div>
+                    <div>
+                        <small class="text-muted d-block">Usuario</small>
+                        <code>{{ $staff->username }}</code>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Estadísticas y Actividad -->
-        <div class="col-lg-6">
-            <!-- Estadísticas -->
-            <div class="row mb-4">
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <h4 class="text-primary">{{ $stats['total_rentals'] }}</h4>
-                            <p class="text-muted mb-0">Rentas Totales</p>
-                        </div>
-                    </div>
+        <!-- Información Detallada -->
+        <div class="col-lg-8">
+            <!-- Dirección -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Dirección</h5>
                 </div>
-                <div class="col-md-6">
-                    <div class="card">
-                        <div class="card-body text-center">
-                            <h4 class="text-info">{{ $stats['active_rentals'] }}</h4>
-                            <p class="text-muted mb-0">Rentas Activas</p>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <small class="text-muted d-block">Dirección Principal</small>
+                            <strong>{{ $staff->address->address }}</strong>
                         </div>
+                        @if($staff->address->address2)
+                        <div class="col-md-6 mb-3">
+                            <small class="text-muted d-block">Dirección 2</small>
+                            <strong>{{ $staff->address->address2 }}</strong>
+                        </div>
+                        @endif
+                        <div class="col-md-4 mb-3">
+                            <small class="text-muted d-block">Distrito</small>
+                            <strong>{{ $staff->address->district }}</strong>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <small class="text-muted d-block">Ciudad</small>
+                            <strong>{{ $staff->address->city->city ?? 'N/A' }}</strong>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <small class="text-muted d-block">País</small>
+                            <strong>{{ $staff->address->city->country->country ?? 'N/A' }}</strong>
+                        </div>
+                        @if($staff->address->postal_code)
+                        <div class="col-md-4">
+                            <small class="text-muted d-block">Código Postal</small>
+                            <strong>{{ $staff->address->postal_code }}</strong>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
 
-            <!-- Rentas Recientes -->
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Rentas Recientes</h5>
+            <!-- Información de Tienda -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-store me-2"></i>Información de Tienda</h5>
                 </div>
-                <div class="table-responsive">
-                    <table class="table table-sm mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Película</th>
-                                <th>Cliente</th>
-                                <th>Fecha Renta</th>
-                                <th>Devolución</th>
-                                <th>Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($staff->rentals()->latest('rental_date')->limit(10)->get() as $rental)
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <small class="text-muted d-block">Tienda Asignada</small>
+                            <strong>Tienda #{{ $staff->store->store_id }}</strong>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <small class="text-muted d-block">Dirección de Tienda</small>
+                            <strong>{{ $staff->store->address->address ?? 'N/A' }}</strong>
+                        </div>
+                        @if($staff->isManager())
+                        <div class="col-12">
+                            <div class="alert alert-info mb-0">
+                                <i class="fas fa-crown me-2"></i>
+                                <strong>Gerente de esta tienda</strong>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Últimas Rentas -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-film me-2"></i>Últimas Rentas Procesadas</h5>
+                    <span class="badge bg-primary">{{ $staff->rentals->count() }}</span>
+                </div>
+                <div class="card-body p-0">
+                    @if($staff->rentals->count() > 0)
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
                                 <tr>
+                                    <th>ID Renta</th>
+                                    <th>Cliente</th>
+                                    <th>Fecha Renta</th>
+                                    <th>Fecha Devolución</th>
+                                    <th>Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($staff->rentals as $rental)
+                                <tr>
+                                    <td><strong>#{{ $rental->rental_id }}</strong></td>
+                                    <td>{{ $rental->customer->first_name ?? 'N/A' }} {{ $rental->customer->last_name ?? '' }}</td>
+                                    <td>{{ $rental->rental_date ? $rental->rental_date->format('d/m/Y') : 'N/A' }}</td>
                                     <td>
-                                        <small>{{ $rental->inventory->film->title }}</small>
-                                    </td>
-                                    <td>
-                                        <small>{{ $rental->customer->full_name }}</small>
-                                    </td>
-                                    <td>
-                                        <small>{{ $rental->rental_date->format('d/m/Y H:i') }}</small>
-                                    </td>
-                                    <td>
-                                        <small>
-                                            @if($rental->return_date)
-                                                {{ $rental->return_date->format('d/m/Y H:i') }}
-                                            @else
-                                                <span class="text-danger">Pendiente</span>
-                                            @endif
-                                        </small>
+                                        @if($rental->return_date)
+                                            {{ $rental->return_date->format('d/m/Y') }}
+                                        @else
+                                            <span class="text-muted">Pendiente</span>
+                                        @endif
                                     </td>
                                     <td>
                                         @if($rental->return_date)
-                                            <span class="badge bg-success">Devuelto</span>
+                                            <span class="badge bg-success">Devuelta</span>
                                         @else
-                                            <span class="badge bg-warning">Activo</span>
+                                            <span class="badge bg-warning text-dark">En Préstamo</span>
                                         @endif
                                     </td>
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted py-3">
-                                        No hay rentas registradas
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Acciones de Seguridad -->
-        <div class="col-lg-3">
-            <div class="card mb-3">
-                <div class="card-header bg-danger text-white">
-                    <h5 class="mb-0">Acciones de Seguridad</h5>
-                </div>
-                <div class="card-body d-grid gap-2">
-                    <!-- Reset Password -->
-                    <form action="{{ route('staff.reset-password', $staff->staff_id) }}" method="POST">
-                        @csrf
-                        <button type="submit" class="btn btn-warning w-100"
-                                onclick="return confirm('¿Estás seguro de resetear la contraseña?')">
-                            <i class="fas fa-key"></i> Resetear Contraseña
-                        </button>
-                    </form>
-
-                    <!-- Toggle Active -->
-                    <form action="{{ route('staff.toggle-active', $staff->staff_id) }}" method="POST">
-                        @csrf
-                        <button type="submit" class="btn {{ $staff->active ? 'btn-danger' : 'btn-success' }} w-100"
-                                onclick="return confirm('¿{{ $staff->active ? 'Desactivar' : 'Activar' }} este empleado?')">
-                            <i class="fas {{ $staff->active ? 'fa-ban' : 'fa-check' }}"></i>
-                            {{ $staff->active ? 'Desactivar Cuenta' : 'Activar Cuenta' }}
-                        </button>
-                    </form>
-
-                    <!-- Change Store -->
-                    @if(!$staff->isManager())
-                        <button type="button" class="btn btn-info w-100" data-bs-toggle="modal" data-bs-target="#changeStoreModal">
-                            <i class="fas fa-exchange-alt"></i> Cambiar Tienda
-                        </button>
-                    @endif
-
-                    @if(!$staff->isManager())
-                        <!-- Delete -->
-                        <form action="{{ route('staff.destroy', $staff->staff_id) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger w-100"
-                                    onclick="return confirm('¿Estás seguro de eliminar este empleado?')">
-                                <i class="fas fa-trash"></i> Eliminar Empleado
-                            </button>
-                        </form>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                    @else
+                    <div class="text-center py-5">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <p class="text-muted mb-0">No hay rentas registradas</p>
+                    </div>
                     @endif
                 </div>
             </div>
 
-            <!-- Información de Timestamps -->
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="mb-0">Información del Sistema</h5>
+            <!-- Acciones Rápidas -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0"><i class="fas fa-bolt me-2"></i>Acciones Rápidas</h5>
                 </div>
                 <div class="card-body">
-                    <div class="mb-3">
-                        <label class="text-muted small">Creado</label>
-                        <p class="mb-0 small">{{ $staff->created_at ? $staff->created_at->format('d/m/Y H:i') : 'N/A' }}</p>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="text-muted small">Última Actualización</label>
-                        <p class="mb-0 small">{{ $staff->updated_at ? $staff->updated_at->format('d/m/Y H:i') : 'N/A' }}</p>
-                    </div>
-
-                    <div class="mb-0">
-                        <label class="text-muted small">ID de Staff</label>
-                        <p class="mb-0 small"><code>{{ $staff->staff_id }}</code></p>
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <form action="{{ route('staff.reset-password', $staff->staff_id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="btn btn-warning w-100" 
+                                        onclick="return confirm('¿Resetear contraseña?')">
+                                    <i class="fas fa-key me-1"></i>Resetear Contraseña
+                                </button>
+                            </form>
+                        </div>
+                        @if(!$staff->isManager())
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-primary w-100" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#changeStoreModal">
+                                <i class="fas fa-exchange-alt me-1"></i>Cambiar Tienda
+                            </button>
+                        </div>
+                        @endif
+                        <div class="col-md-4">
+                            <button type="button" class="btn btn-danger w-100" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#deleteModal">
+                                <i class="fas fa-trash me-1"></i>Eliminar Empleado
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -223,25 +284,28 @@
     </div>
 </div>
 
-<!-- Modal para cambiar tienda -->
+<!-- Modal Cambiar Tienda -->
+@if(!$staff->isManager())
 <div class="modal fade" id="changeStoreModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Cambiar Tienda</h5>
+                <h5 class="modal-title">Cambiar de Tienda</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form action="{{ route('staff.change-store', $staff->staff_id) }}" method="POST">
                 @csrf
                 <div class="modal-body">
+                    <p>Seleccione la nueva tienda para <strong>{{ $staff->full_name }}</strong></p>
                     <div class="mb-3">
-                        <label class="form-label">Selecciona la nueva tienda:</label>
+                        <label class="form-label">Nueva Tienda</label>
                         <select name="store_id" class="form-select" required>
-                            <option value="">-- Selecciona una tienda --</option>
-                            @foreach($staff->store ? \App\Models\Store::where('store_id', '!=', $staff->store_id)->get() : \App\Models\Store::all() as $store)
+                            @foreach(\App\Models\Store::all() as $store)
+                                @if($store->store_id != $staff->store_id)
                                 <option value="{{ $store->store_id }}">
-                                    Tienda {{ $store->store_id }}
+                                    Tienda {{ $store->store_id }} - {{ $store->address->address ?? 'Sin dirección' }}
                                 </option>
+                                @endif
                             @endforeach
                         </select>
                     </div>
@@ -254,61 +318,41 @@
         </div>
     </div>
 </div>
+@endif
 
-@endsection<strong>{{ $staff->full_name }}</strong></p>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="text-muted small">Usuario</label>
-                        <p class="mb-0"><code>{{ $staff->username }}</code></p>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="text-muted small">Email</label>
-                        <p class="mb-0">
-                            <a href="mailto:{{ $staff->email }}">{{ $staff->email }}</a>
-                        </p>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="text-muted small">Estado</label>
-                        <p class="mb-0">
-                            @if($staff->active)
-                                <span class="badge bg-success">Activo</span>
-                            @else
-                                <span class="badge bg-danger">Inactivo</span>
-                            @endif
-                        </p>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="text-muted small">Rol</label>
-                        <p class="mb-0">
-                            @if($staff->isManager())
-                                <span class="badge bg-warning text-dark">Gerente</span>
-                            @else
-                                <span class="badge bg-secondary">Empleado</span>
-                            @endif
-                        </p>
-                    </div>
-                </div>
+<!-- Modal Eliminar -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-
-            <!-- Dirección -->
-            <div class="card mb-3">
-                <div class="card-header">
-                    <h5 class="mb-0">Dirección</h5>
-                </div>
-                <div class="card-body">
-                    <p class="mb-2">{{ $staff->address->address }}</p>
-                    @if($staff->address->address2)
-                        <p class="mb-2">{{ $staff->address->address2 }}</p>
-                    @endif
-                    <p class="mb-2">
-                        <strong>{{ $staff->address->district }}</strong><br>
-                        {{ $staff->address->city->city }}, {{ $staff->address->city->country->country }}
-                    </p>
-                    @if($staff->address->postal_code)
-                        <p class="mb-2">CP: {{ $staff->address->postal_code }}</p>
-                    @endif
-                    <p class="mb-0">
+            <div class="modal-body">
+                <p>¿Está seguro de eliminar al empleado <strong>{{ $staff->full_name }}</strong>?</p>
+                @if($staff->isManager())
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Advertencia:</strong> Este empleado es gerente de una tienda.
+                    </div>
+                @endif
+                @if($stats['total_rentals'] > 0)
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Este empleado ha procesado <strong>{{ $stats['total_rentals'] }}</strong> rentas.
+                    </div>
+                @endif
+                <p class="text-danger mb-0"><strong>Esta acción no se puede deshacer.</strong></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <form action="{{ route('staff.destroy', $staff->staff_id) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">Eliminar Empleado</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Staff;
 use App\Models\Store;
 use App\Models\Address;
+use App\Models\City;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -30,7 +31,6 @@ class StaffController extends Controller
 
         $staff = $query->paginate(15);
         $stores = Store::all();
-
         return view('admin.staff.index', compact('staff', 'stores'));
     }
 
@@ -56,9 +56,10 @@ class StaffController extends Controller
      */
     public function create()
     {
-        $stores = Store::all();
 
-        return view('admin.staff.create', compact('stores'));
+        $stores = Store::all();
+        $cities = City::all();
+        return view('admin.staff.create', compact('stores','cities'));
     }
 
     /**
