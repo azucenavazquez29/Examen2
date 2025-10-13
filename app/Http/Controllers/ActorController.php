@@ -67,4 +67,11 @@ class ActorController extends Controller
         $actor->delete();
         return redirect()->route('actors.index')->with('success', 'Actor eliminado.');
     }
+
+
+    public function show(Actor $actor)
+{
+    $actor->load('films');
+    return view('actors.show', compact('actor'));
+}
 }

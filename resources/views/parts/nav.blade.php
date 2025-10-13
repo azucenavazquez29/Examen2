@@ -24,16 +24,24 @@
                                     </li>
                                     
                                     <li class="nav-item navegacion_item">
-                                        <a class="nav-link" href="#"><span class="navegacion_item_color">Pefil</span></a>
+                                        <a class="nav-link" href="{{ url('/cliente') }}"><span class="navegacion_item_color">Pefil</span></a>
                                     </li>
 
                                     <li class="nav-item navegacion_item">
-                                        <a class="nav-link" href="{{ url('/estadisticas') }}"><span class="navegacion_item_color">Estadisticas</span></a>
+                                        <a class="nav-link" href="{{ url('/stats') }}"><span class="navegacion_item_color">Estadisticas</span></a>
+                                    </li>
+
+                                    <li class="nav-item navegacion_item">
+                                        <a class="nav-link" href="{{ url('/reportes') }}"><span class="navegacion_item_color">Reportes</span></a>
+                                    </li>
+
+                                    <li class="nav-item navegacion_item">
+                                        <a class="nav-link" href="{{ url('/films/import') }}"><span class="navegacion_item_color">OMDB</span></a>
                                     </li>
 
                                     <li class="nav-item navegacion_item dropdown">
                                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <span class="navegacion_item_color">Listas</span>
+                                            <span class="navegacion_item_color">Catalogos</span>
                                         </a>
                                         <ul class="dropdown-menu variante">
                                             <li><a class="dropdown-item variante_opciones" href="{{ url('/films') }}"><span class="navegacion_item_color">Peliculas</span></a></li>

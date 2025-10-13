@@ -15,6 +15,10 @@ class Inventory extends Model
         'store_id'
     ];
 
+        protected $casts = [
+        'last_update' => 'datetime',
+    ];
+
     public function film()
     {
         return $this->belongsTo(Film::class, 'film_id', 'film_id');

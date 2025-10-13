@@ -26,9 +26,6 @@
             <tr>
                 <td class="fw-bold">{{$language->name}}</td>
                 <td class="text-center">
-                    <a href="{{route('languages.show',$language)}}" class="btn btn-sm btn-primary me-1 shadow-sm">
-                        👁 Ver
-                    </a>
                     <a href="{{route('languages.edit',$language)}}" class="btn btn-sm btn-warning me-1 shadow-sm">
                         ✏️ Editar
                     </a>

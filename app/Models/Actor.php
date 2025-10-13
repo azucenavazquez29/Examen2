@@ -16,6 +16,10 @@ class Actor extends Model
         'last_name'
     ];
 
+    // AGREGAR ESTO
+    protected $casts = [
+        'last_update' => 'datetime',
+    ];
     public function films()
     {
         return $this->belongsToMany(Film::class, 'film_actor', 'actor_id', 'film_id');

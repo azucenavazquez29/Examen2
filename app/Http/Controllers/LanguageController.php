@@ -65,4 +65,19 @@ class LanguageController extends Controller
         $language->delete();
         return redirect()->route('languages.index')->with('success', 'Idioma eliminado.');
     }
+
+        public function show(Language $language)
+    {
+        // Cargar las relaciones con las películas
+        $language->load([
+            'films' => function($query) {
+                $query->with(['inventories', 'language']);
+            },
+            'originalLanguageFilms' => function($query) {
+                $query->with(['language']);
+            }
+        ]);
+
+        return view('languages.show', compact('language'));
+    }
 }

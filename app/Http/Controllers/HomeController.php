@@ -22,7 +22,7 @@ class HomeController extends FilmController
     //$staff = Staff::all();  
     $staff = Staff::limit(1)->get(); 
     //$customers = Customer::all();
-    $customers = Customer::limit(10)->get();
+    $customers = Customer::limit(30)->get();
 
 
     //ELEMENTOS QUE E MUESTRAN EN NLA PESTAÑA PRINCIPAL

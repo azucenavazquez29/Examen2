@@ -13,8 +13,19 @@ class Language extends Model
 
     protected $fillable = ['name'];
 
+        protected $casts = [
+        'last_update' => 'datetime',
+    ];
+
+
+
     public function films()
     {
-        return $this->hasMany(Film::class, 'language_id');
+        return $this->hasMany(Film::class, 'language_id', 'language_id');
+    }
+
+        public function originalLanguageFilms()
+    {
+        return $this->hasMany(Film::class, 'original_language_id', 'language_id');
     }
 }

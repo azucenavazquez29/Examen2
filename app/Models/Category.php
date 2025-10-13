@@ -13,6 +13,10 @@ class Category extends Model
 
     protected $fillable = ['name'];
 
+        protected $casts = [
+        'last_update' => 'datetime',
+    ];
+
     public function films()
     {
         return $this->belongsToMany(Film::class, 'film_category', 'category_id', 'film_id');

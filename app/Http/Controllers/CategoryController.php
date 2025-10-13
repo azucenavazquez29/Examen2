@@ -66,4 +66,10 @@ class CategoryController extends Controller
         $category->delete();
         return redirect()->route('categories.index')->with('success', 'Categorias eliminada.');
     }
+
+        public function show(Category $category)
+{
+    $category->load('films');
+    return view('categories.show', compact('category'));
+}
 }
