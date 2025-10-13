@@ -24,11 +24,15 @@
                                     </li>
                                     
                                     <li class="nav-item navegacion_item">
-                                        <a class="nav-link" href="{{ url('/cliente') }}"><span class="navegacion_item_color">Pefil</span></a>
+                                        <a class="nav-link" href="{{ url('/cliente') }}"><span class="navegacion_item_color">User</span></a>
                                     </li>
 
                                     <li class="nav-item navegacion_item">
-                                        <a class="nav-link" href="{{ url('/stats') }}"><span class="navegacion_item_color">Estadisticas</span></a>
+                                        <a class="nav-link" href="{{ url('/cliente') }}"><span class="navegacion_item_color">Empleado</span></a>
+                                    </li>
+
+                                    <li class="nav-item navegacion_item">
+                                        <a class="nav-link" href="{{ url('/stats') }}"><span class="navegacion_item_color">Stats</span></a>
                                     </li>
 
                                     <li class="nav-item navegacion_item">
