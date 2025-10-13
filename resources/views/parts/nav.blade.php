@@ -56,6 +56,12 @@
                         </li>
 
                         <li class="nav-item navegacion_item">
+                            <a class="nav-link" href="{{ url('/inventory') }}">
+                                <span class="navegacion_item_color">Inventario</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item navegacion_item">
                             <a class="nav-link" href="{{ url('/films/import') }}">
                                 <span class="navegacion_item_color">OMDB</span>
                             </a>
@@ -74,6 +80,8 @@
                                 <li><a class="dropdown-item variante_opciones" href="{{ url('/categories') }}">Categorías</a></li>
                                 <li><a class="dropdown-item variante_opciones" href="{{ url('/languages') }}">Idiomas</a></li>
                                 <li><a class="dropdown-item variante_opciones" href="{{ url('/customers') }}">Clientes/Usuarios</a></li>
+                                <li><a class="dropdown-item variante_opciones" href="{{ url('/stores') }}">Tiendas</a></li>
+                                <li><a class="dropdown-item variante_opciones" href="{{ url('/staff') }}">Empleados</a></li>
                             </ul>
                         </li>
                     @endif
@@ -111,9 +119,9 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end variante" aria-labelledby="userDropdownStaff">
                             <li class="px-3 py-2">
-                                <small class="text-muted">{{ Session::get('staff_name') }}</small><br>
-                                <small class="text-muted">{{ Session::get('staff_email') }}</small><br>
-                                <small class="text-muted">
+                                <small style="color:white !important;" class="text-muted">{{ Session::get('staff_name') }}</small><br>
+                                <small style="color:white !important;" class="text-muted">{{ Session::get('staff_email') }}</small><br>
+                                <small  style="color:white !important;" class="text-muted">
                                     <strong>Rol:</strong> {{ ucfirst(Session::get('user_role', 'employee')) }}
                                 </small>
                             </li>

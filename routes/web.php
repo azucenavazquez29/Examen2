@@ -15,6 +15,9 @@ use App\Http\Controllers\RentController;
 use App\Http\Controllers\FilmController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\StaffController;
+use App\Http\Controllers\StoreController;
 
 // ============================================
 // RUTA PÚBLICA (sin autenticación)
@@ -107,6 +110,64 @@ Route::middleware(['staff', 'admin'])->group(function () {
         Route::get('/peliculas/top/pdf', [ReportController::class, 'exportTopMoviesPdf'])->name('peliculas.top.pdf');
         Route::get('/clientes/top', [ReportController::class, 'exportTopCustomersCsv'])->name('clientes.top.excel');
         Route::get('/clientes/top/pdf', [ReportController::class, 'exportTopCustomersPdf'])->name('clientes.top.pdf');
+    });
+
+
+    Route::prefix('inventory')->name('inventory.')->group(function () {
+    Route::get('/', [InventoryController::class, 'index'])->name('index');
+    Route::get('/create', [InventoryController::class, 'create'])->name('create');
+    Route::post('/', [InventoryController::class, 'store'])->name('store');
+    Route::get('/{inventory}/edit', [InventoryController::class, 'edit'])->name('edit');
+    Route::put('/{inventory}', [InventoryController::class, 'update'])->name('update');
+    Route::delete('/{inventory}', [InventoryController::class, 'destroy'])->name('destroy');
+    Route::get('/film/{film}', [InventoryController::class, 'byFilm'])->name('by-film');
+    Route::get('/store/{store}', [InventoryController::class, 'byStore'])->name('by-store');
+    Route::post('/bulk-add', [InventoryController::class, 'bulkAdd'])->name('bulk-add');
+    Route::post('/transfer', [InventoryController::class, 'transfer'])->name('transfer');    
+    });
+
+
+        Route::prefix('stores')->name('stores.')->group(function () {
+        Route::get('/', [StoreController::class, 'index'])->name('index');
+        Route::get('/create', [StoreController::class, 'create'])->name('create');
+        Route::post('/', [StoreController::class, 'store'])->name('store');
+        Route::get('/{store}/edit', [StoreController::class, 'edit'])->name('edit');
+        Route::put('/{store}', [StoreController::class, 'update'])->name('update');
+        Route::delete('/{store}', [StoreController::class, 'destroy'])->name('destroy');
+        Route::get('/{store}', [StoreController::class, 'show'])->name('show');
+        Route::post('/{store}/assign-manager', [StoreController::class, 'assignManager'])->name('assign-manager');
+    });
+
+        Route::prefix('staff')->name('staff.')->group(function () {
+        Route::get('/', [StaffController::class, 'index'])->name('index');
+        Route::get('/create', [StaffController::class, 'create'])->name('create');
+        Route::post('/', [StaffController::class, 'store'])->name('store');
+        Route::get('/{staff}/edit', [StaffController::class, 'edit'])->name('edit');
+        Route::put('/{staff}', [StaffController::class, 'update'])->name('update');
+        Route::delete('/{staff}', [StaffController::class, 'destroy'])->name('destroy');
+        Route::get('/{staff}', [StaffController::class, 'show'])->name('show');
+        
+        // Acciones especiales
+        Route::post('/{staff}/toggle-active', [StaffController::class, 'toggleActive'])->name('toggle-active');
+        Route::post('/{staff}/reset-password', [StaffController::class, 'resetPassword'])->name('reset-password');
+        Route::post('/{staff}/lock', [StaffController::class, 'lockAccount'])->name('lock');
+        Route::post('/{staff}/unlock', [StaffController::class, 'unlockAccount'])->name('unlock');
+        Route::post('/{staff}/change-store', [StaffController::class, 'changeStore'])->name('change-store');
+        Route::get('/store/{store}', [StaffController::class, 'byStore'])->name('by-store');
+    });
+
+
+        Route::prefix('admin/customers')->name('admin.customers.')->group(function () {
+        Route::get('/', [AdminCustomerController::class, 'index'])->name('index');
+        Route::get('/{customer}', [AdminCustomerController::class, 'show'])->name('show');
+        Route::get('/{customer}/edit', [AdminCustomerController::class, 'edit'])->name('edit');
+        Route::put('/{customer}', [AdminCustomerController::class, 'update'])->name('update');
+        Route::delete('/{customer}', [AdminCustomerController::class, 'destroy'])->name('destroy');
+        
+        // Acciones especiales
+        Route::post('/{customer}/toggle-active', [AdminCustomerController::class, 'toggleActive'])->name('toggle-active');
+        Route::post('/{customer}/reset-password', [AdminCustomerController::class, 'resetPassword'])->name('reset-password');
+        Route::get('/store/{store}', [AdminCustomerController::class, 'byStore'])->name('by-store');
     });
 });
 

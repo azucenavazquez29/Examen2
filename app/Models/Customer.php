@@ -58,6 +58,14 @@ class Customer extends Model
             ->get();
     }
 
+       /**
+     * Atributo: Nombre completo
+     */
+    public function getFullNameAttribute()
+    {
+        return $this->first_name . ' ' . $this->last_name;
+    }
+
 
 public function hasOverdueRentals()
 {
