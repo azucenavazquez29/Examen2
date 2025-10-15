@@ -8,6 +8,7 @@ class Rental extends Model
 {
     protected $table = 'rental';
     protected $primaryKey = 'rental_id';
+    protected $dates = ['rental_date', 'return_date'];
     public $timestamps = false; // Sakila usa last_update
 
     protected $fillable = [

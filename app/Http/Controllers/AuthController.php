@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
@@ -23,73 +24,99 @@ class AuthController extends Controller
      * Procesar el login del empleado
      */
     public function login(Request $request)
-{
-    $request->validate([
-        'email' => 'required|email',
-        'password' => 'required'
-    ], [
-        'email.required' => 'El correo electrónico es obligatorio',
-        'email.email' => 'Debe ser un correo electrónico válido',
-        'password.required' => 'La contraseña es obligatoria'
-    ]);
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ], [
+            'email.required' => 'El correo electrónico es obligatorio',
+            'email.email' => 'Debe ser un correo electrónico válido',
+            'password.required' => 'La contraseña es obligatoria'
+        ]);
 
-    // Buscar al empleado por email
-    $staff = DB::table('staff')
-        ->where('email', $request->email)
-        ->where('active', 1)
-        ->first();
+        // Buscar al empleado por email
+        $staff = DB::table('staff')
+            ->where('email', $request->email)
+            ->where('active', 1)
+            ->first();
 
-    if (!$staff) {
-        return back()->withErrors([
-            'email' => 'Las credenciales no coinciden con nuestros registros.'
-        ])->withInput($request->only('email'));
-    }
-
-    // Verificar la contraseña
-    $passwordMatch = false;
-    
-    if ($staff->password === $request->password) {
-        $passwordMatch = true;
-    } 
-    elseif (sha1($request->password) === $staff->password) {
-        $passwordMatch = true;
-    }
-    elseif ($staff->password && strlen($staff->password) === 60) {
-        try {
-            if (Hash::check($request->password, $staff->password)) {
-                $passwordMatch = true;
-            }
-        } catch (\Exception $e) {
-            // Si falla Bcrypt, continuamos
+        if (!$staff) {
+            return back()->withErrors([
+                'email' => 'Las credenciales no coinciden con nuestros registros.'
+            ])->withInput($request->only('email'));
         }
+
+        // Verificar la contraseña
+        $passwordMatch = false;
+
+        // Verificar con SHA-1
+        if (sha1($request->password) === $staff->password) {
+            $passwordMatch = true;
+        }
+
+        if (!$passwordMatch) {
+            return back()->withErrors([
+                'email' => 'Las credenciales no coinciden con nuestros registros.'
+            ])->withInput($request->only('email'));
+        }
+
+        try {
+            // Actualizar la última fecha de acceso
+            DB::table('staff')
+                ->where('staff_id', $staff->staff_id)
+                ->update(['last_update' => now()]);
+
+            // **REGISTRAR EL ACCESO EN LA TABLA staff_access_log**
+            DB::table('staff_access_log')->insert([
+                'staff_id' => $staff->staff_id,
+                'login_time' => now(),
+                'ip_address' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+                'access_type' => 'login'
+            ]);
+
+            Log::info('Acceso registrado para staff_id: ' . $staff->staff_id);
+
+        } catch (\Exception $e) {
+            // Log del error pero no interrumpir el login
+            Log::error('Error al registrar acceso: ' . $e->getMessage());
+        }
+
+        // Guardar la información del empleado en la sesión
+        Session::put('staff_id', $staff->staff_id);
+        Session::put('staff_name', $staff->first_name . ' ' . $staff->last_name);
+        Session::put('staff_email', $staff->email);
+        Session::put('store_id', $staff->store_id);
+        Session::put('user_role', $staff->role ?? 'empleado');
+
+        return redirect()->route('empleado.dashboard')->with('success', '¡Bienvenido ' . $staff->first_name . '!');
     }
-
-    if (!$passwordMatch) {
-        return back()->withErrors([
-            'email' => 'Las credenciales no coinciden con nuestros registros.'
-        ])->withInput($request->only('email'));
-    }
-
-    // Actualizar la última fecha de acceso
-    DB::table('staff')
-        ->where('staff_id', $staff->staff_id)
-        ->update(['last_update' => now()]);
-
-    // Guardar la información del empleado en la sesión
-    Session::put('staff_id', $staff->staff_id);
-    Session::put('staff_name', $staff->first_name . ' ' . $staff->last_name);
-    Session::put('staff_email', $staff->email);
-    Session::put('store_id', $staff->store_id);
-    Session::put('user_role', $staff->role ?? 'empleado'); // CAMBIO AQUÍ
-
-    return redirect()->route('empleado')->with('success', '¡Bienvenido ' . $staff->first_name . '!');
-}
 
     /**
      * Cerrar sesión
      */
-    public function logout()
+    public function logout(Request $request)
     {
+        $staffId = Session::get('staff_id');
+
+        // **REGISTRAR EL LOGOUT**
+        if ($staffId) {
+            try {
+                DB::table('staff_access_log')->insert([
+                    'staff_id' => $staffId,
+                    'login_time' => now(),
+                    'ip_address' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                    'access_type' => 'logout'
+                ]);
+
+                Log::info('Logout registrado para staff_id: ' . $staffId);
+
+            } catch (\Exception $e) {
+                Log::error('Error al registrar logout: ' . $e->getMessage());
+            }
+        }
+
         Session::flush();
         return redirect()->route('home')->with('success', 'Sesión cerrada correctamente');
     }

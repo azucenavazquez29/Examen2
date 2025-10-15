@@ -74,6 +74,25 @@ public function rentals()
     );
 }
 
+    // Método para obtener copias disponibles en una sucursal específica
+    public function availableCopiesInStore($storeId)
+    {
+        return $this->inventory()
+            ->where('store_id', $storeId)
+            ->whereDoesntHave('rentals', function($query) {
+                $query->whereNull('return_date');
+            })
+            ->count();
+    }
+
+        // Método para obtener total de copias en una sucursal específica
+    public function totalCopiesInStore($storeId)
+    {
+        return $this->inventory()->where('store_id', $storeId)->count();
+    }
+
+    
+
 /**
  * Verificar si la película está disponible para rentar
  */

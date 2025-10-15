@@ -88,4 +88,9 @@ public function overdueRentals()
         })
         ->get();
 }
+
+public function getRouteKeyName()
+{
+    return 'customer_id';
+}
 }

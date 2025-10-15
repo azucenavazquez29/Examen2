@@ -34,15 +34,32 @@
                 @endif
                 
                 @if(Session::has('staff_id'))
-                    <!-- Menú visible solo para empleados autenticados -->
+
                     <li class="nav-item navegacion_item">
-                        <a class="nav-link" href="{{ url('/empleado') }}">
-                            <span class="navegacion_item_color">Empleado</span>
+                        <a class="nav-link" href="{{ url('/empleado/dashboard') }}">
+                            <span class="navegacion_item_color">Panel</span>
                         </a>
                     </li>
 
+                    @if(!(Session::get('user_role') === 'admin'))
+                    <!-- Menú visible solo para empleados autenticados -->
+                    <li class="nav-item navegacion_item">
+                        <a class="nav-link" href="{{ url('/empleado_normal') }}">
+                            <span class="navegacion_item_color">Rentas</span>
+                        </a>
+                    </li>
+                    @endif
+
                     @if(Session::get('user_role') === 'admin')
                         <!-- Opciones exclusivas de administrador -->
+
+                        <li class="nav-item navegacion_item">
+                            <a class="nav-link" href="{{ url('/empleado_admin') }}">
+                                <span class="navegacion_item_color">Rentas</span>
+                            </a>
+                        </li>
+
+
                         <li class="nav-item navegacion_item">
                             <a class="nav-link" href="{{ url('/stats') }}">
                                 <span class="navegacion_item_color">Stats</span>
@@ -79,7 +96,7 @@
                                 <li><a class="dropdown-item variante_opciones" href="{{ url('/actors') }}">Actores</a></li>
                                 <li><a class="dropdown-item variante_opciones" href="{{ url('/categories') }}">Categorías</a></li>
                                 <li><a class="dropdown-item variante_opciones" href="{{ url('/languages') }}">Idiomas</a></li>
-                                <li><a class="dropdown-item variante_opciones" href="{{ url('/customers') }}">Clientes/Usuarios</a></li>
+                                <li><a class="dropdown-item variante_opciones" href="{{ url('/customers_otro') }}">Clientes/Usuarios</a></li>
                                 <li><a class="dropdown-item variante_opciones" href="{{ url('/stores') }}">Tiendas</a></li>
                                 <li><a class="dropdown-item variante_opciones" href="{{ url('/staff') }}">Empleados</a></li>
                             </ul>
@@ -145,9 +162,9 @@
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end variante" aria-labelledby="userDropdownCustomer">
                             <li class="px-3 py-2">
-                                <small class="text-muted">{{ Session::get('customer_name') }}</small><br>
-                                <small class="text-muted">{{ Session::get('customer_email') }}</small><br>
-                                <small class="text-muted"><strong>Rol:</strong> Cliente</small>
+                                <small style="color:white !important;" class="text-muted">{{ Session::get('customer_name') }}</small><br>
+                                <small style="color:white !important;" class="text-muted">{{ Session::get('customer_email') }}</small><br>
+                                <small style="color:white !important;" class="text-muted"><strong>Rol:</strong> Cliente</small>
                             </li>
                             <li><hr class="dropdown-divider"></li>
                             <li>

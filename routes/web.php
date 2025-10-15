@@ -6,9 +6,11 @@ use App\Http\Controllers\EstadisticasController;
 use App\Http\Controllers\AdministradorController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\ControllerEmpleado;
+use App\Http\Controllers\ControllerEmpleado_normal;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\ActorController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomerController_a;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\RentController;
@@ -18,6 +20,11 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\StaffController;
 use App\Http\Controllers\StoreController;
+use App\Http\Controllers\EmpleadoController;
+use App\Http\Controllers\AdminCustomerController;
+use App\Http\Controllers\OtroCustomerController;
+use App\Http\Controllers\RentalController_avanzado;
+use App\Http\Controllers\FilmController_filter;
 
 // ============================================
 // RUTA PÚBLICA (sin autenticación)
@@ -53,8 +60,29 @@ Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name(
 Route::middleware(['staff'])->group(function () {
     
     // Dashboard de empleado
-    Route::get('/empleado', [ControllerEmpleado::class, 'index'])->name('empleado');
-    
+    Route::get('/empleado_normal', [ControllerEmpleado_normal::class, 'index'])->name('empleado');
+    Route::get('/empleado', [EmpleadoController::class, 'index'])->name('empleado');
+    Route::get('/empleado/dashboard', [EmpleadoController::class, 'index'])->name('empleado.dashboard');
+    Route::get('/empleado/historial-accesos', [EmpleadoController::class, 'historialAccesos'])->name('empleado.historial-accesos');
+    Route::get('/empleado/mis-accesos', [EmpleadoController::class, 'misAccesos'])->name('empleado.mis-accesos');
+
+    // Gestión de Clientes por Empleado
+    Route::prefix('empleado/clientes')->name('empleado.clientes.')->group(function () {
+        Route::get('/', [EmpleadoController::class, 'clientes'])->name('index');
+        Route::get('/crear', [EmpleadoController::class, 'crearCliente'])->name('crear');
+        Route::post('/guardar', [EmpleadoController::class, 'guardarCliente'])->name('guardar');
+        Route::get('/{id}/editar', [EmpleadoController::class, 'editarCliente'])->name('editar');
+        Route::put('/{id}/actualizar', [EmpleadoController::class, 'actualizarCliente'])->name('actualizar');
+        Route::get('/{id}/historial', [EmpleadoController::class, 'historialCliente'])->name('historial');
+    });
+
+    // Gestión de Inventario por Empleado
+    Route::prefix('empleado/inventario')->name('empleado.inventario.')->group(function () {
+        Route::get('/', [EmpleadoController::class, 'inventario'])->name('index');
+        Route::get('/{id}/detalles', [EmpleadoController::class, 'detallesPelicula'])->name('detalles');
+    });
+
+
     // Gestión de rentas
     Route::prefix('rent')->name('rent.')->group(function () {
         Route::get('/', [RentController::class, 'index'])->name('index');
@@ -62,15 +90,28 @@ Route::middleware(['staff'])->group(function () {
         Route::post('/', [RentController::class, 'store'])->name('store');
         Route::put('/return/{rental}', [RentController::class, 'returnFilm'])->name('return');
     });
+
+        Route::prefix('rental')->name('rental.')->group(function () {
+        Route::post('/store', [RentalController_avanzado::class, 'store'])->name('store');
+        Route::put('/return/{rental}', [RentalController_avanzado::class, 'returnFilm'])->name('return');
+    });
+
+    Route::get('/films_filter', [FilmController_filter::class, 'index'])->name('films_filter.index');
     
     // Gestión de clientes (empleado puede ver/crear clientes)
     Route::resource('customers', CustomerController::class);
+    Route::resource('customers_otro', OtroCustomerController::class)->parameters([
+    'customers_otro' => 'customer'
+]);
 });
 
 // ============================================
 // RUTAS PROTEGIDAS - SOLO ADMINISTRADOR
 // ============================================
 Route::middleware(['staff', 'admin'])->group(function () {
+
+    //Ctalogo de rentas para soo el admin 
+    Route::get('/empleado_admin', [ControllerEmpleado::class, 'index'])->name('empleado_admin');
     
     // Estadísticas
     Route::get('/stats', [EstadisticasController::class, 'index'])->name('stats');

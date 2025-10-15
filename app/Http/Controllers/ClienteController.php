@@ -12,8 +12,7 @@ class ClienteController extends Controller
 {
     public function index(Request $request)
     {
-        // Por ahora simulamos el customer_id
-        // En producción esto vendría de Auth::user()->customer_id
+
         $customerId = $request->get('customer_id', 1); // Cambiar por autenticación real
         
         $customer = Customer_1::with(['address.city.country'])

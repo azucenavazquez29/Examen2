@@ -32,7 +32,7 @@ class ControllerEmpleado extends FilmController
     $films_tst = Film::paginate(12);
 
    
-    return view('empleado', compact('films', 'films_tst','customers','actors_tst','staff'));
+    return view('empleado_admin', compact('films', 'films_tst','customers','actors_tst','staff'));
     }
 
 

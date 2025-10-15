@@ -7,7 +7,7 @@
     <div class="row mb-4">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center">
-                <h2 class="mb-0">
+                <h2 style="color:white !important;" class="mb-0">
                     <i class="fas fa-users me-2"></i>Empleados
                 </h2>
                 <a href="{{ route('staff.create') }}" class="btn btn-primary">

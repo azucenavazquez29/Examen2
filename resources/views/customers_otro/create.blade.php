@@ -11,7 +11,7 @@
                     <h1 class="display-5 fw-bold">👤 Nuevo Cliente</h1>
                 </div>
                 <div class="card-body p-5">
-                    <form action="{{ route('customers.store') }}" method="POST">
+                    <form action="{{ route('customers_otro.store') }}" method="POST">
                         @csrf
 
                         @if ($errors->any())
@@ -129,7 +129,7 @@
                         </div>
 
                         <div class="text-center mt-5">
-                            <a href="{{ route('customers.index') }}" class="btn btn-secondary btn-lg shadow-lg px-5 py-3 fw-bold me-3">
+                            <a href="{{ route('customers_otro.index') }}" class="btn btn-secondary btn-lg shadow-lg px-5 py-3 fw-bold me-3">
                                 ← Cancelar
                             </a>
                             <button type="submit"
