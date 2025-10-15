@@ -59,3 +59,19 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+EXAMEN 2 
+El Sistema de Gestión de Renta de Películas es una aplicación web desarrollada en Laravel, diseñada para administrar de forma integral la renta y devolución de películas, considerando tres tipos de usuarios:
+
+Administrador general,
+
+Empleados de sucursal,
+
+Clientes.
+
+El sistema permite la gestión de catálogos, inventarios, clientes y rentas, con autenticación por roles, generación de reportes y conexión a una API externa (OMDb) para registrar automáticamente películas.
+
+COMO CONCLUSIÓN 
+EL SISTEMA DE GESTIÓN DE PELICULAS TIENE UN ENFOQUE MAS PROFUNDO EN EL USO DE LOS ROLES CON LOS REQUERIMIENTOS FUNCIONALES Y NO FUNCIONALES DEPEDIENDO 
+DEL ROL ASIGNADO POR EL USUARIO Y EL USO DE UNA API EXTERNA EN OMDB EN LA CUAL SE TIENE LAS ESTADISTICAS Y LOS REPORTES SER GENERA EN CSV O PDF PARA TENER
+UNA MAYOR SEGURIDAD PARA EL ADMINISTRADOR.
